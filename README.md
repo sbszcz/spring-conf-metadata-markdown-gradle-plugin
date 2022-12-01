@@ -20,4 +20,17 @@ Example README.md
 ...
 ```
 
+The target markdown file can be customized like this:
+
+Example build.gradle.kts
+```kotlin
+...
+springConfMetadataMarkdown {
+    readMeTarget.set(project.file("documentation.md"))
+}
+...
+```
+
+
+
 
