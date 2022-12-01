@@ -49,7 +49,7 @@ object ReadmeWriter {
             }
         }
 
-        Files.write(targetFile.toPath(), result.toString().toByteArray())
+        Files.write(targetFile.toPath(), result.toString().trimEnd().toByteArray())
     }
 }
 
@@ -112,7 +112,9 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
                 .append("\n")
 
             try {
-                tableContent.appendTableRows(JSONObject(jsonFile.readText()))
+                tableContent
+                    .appendTableRows(JSONObject(jsonFile.readText()))
+                    .append("\n")
                 content.append(tableContent)
             } catch (e: JSONException) {
                 logger.error("error during json parsing ${jsonFile.absolutePath}", e)
@@ -123,7 +125,7 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
             }
         }
 
-        ReadmeWriter.writeTextInsideMarker(content.toString(), readmeTargetFile)
+        ReadmeWriter.writeTextInsideMarker(content.toString().trimEnd(), readmeTargetFile)
     }
 
     private fun sourcePath(jsonFile: File, projectFolderName: String): String {

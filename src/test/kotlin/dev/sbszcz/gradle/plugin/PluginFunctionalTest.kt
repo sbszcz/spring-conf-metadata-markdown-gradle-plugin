@@ -138,9 +138,7 @@ class PluginFunctionalTest {
         | Name | Type | Description | Default | Source |
         |:---|:---|:---|:---|:---|
         | foo | java.lang.Boolean | example | n/a | Main |
-
         <!-- /springconfmetadata -->
-        
         """.trimIndent())
 
     }
@@ -161,7 +159,7 @@ class PluginFunctionalTest {
                 """
                 <!-- springconfmetadata -->
                 <!-- /springconfmetadata -->
-            """.trimIndent()
+                """.trimIndent()
             )
 
         subFolder1.resolve("spring-configuration-metadata.json")
@@ -172,16 +170,14 @@ class PluginFunctionalTest {
 
         assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
         assertThat(customMarkdownFile.readText()).isEqualTo("""
-        <!-- springconfmetadata -->
-        **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
-
-        | Name | Type | Description | Default | Source |
-        |:---|:---|:---|:---|:---|
-        | foo | java.lang.Boolean | example | n/a | Main |
-
-        <!-- /springconfmetadata -->
-        
-        """.trimIndent())
+            <!-- springconfmetadata -->
+            **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
+            
+            | Name | Type | Description | Default | Source |
+            |:---|:---|:---|:---|:---|
+            | foo | java.lang.Boolean | example | n/a | Main |
+            <!-- /springconfmetadata -->
+            """.trimIndent())
 
     }
 
@@ -199,7 +195,7 @@ class PluginFunctionalTest {
         val result = executeGradleWithArgs("renderMetadataTable")
 
         assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
-        assertThat(readmeFile.readText()).isEqualTo("<!-- springconfmetadata --><!-- /springconfmetadata -->\n")
+        assertThat(readmeFile.readText()).isEqualTo("<!-- springconfmetadata --><!-- /springconfmetadata -->")
     }
 
     @Test
@@ -225,15 +221,14 @@ class PluginFunctionalTest {
             | Name | Type | Description | Default | Source |
             |:---|:---|:---|:---|:---|
             | foo | java.lang.Boolean | example | n/a | Main |
+
             **Source**: */test-project/subfolder_2/spring-configuration-metadata.json*
             
             | Name | Type | Description | Default | Source |
             |:---|:---|:---|:---|:---|
             | bar | java.lang.String | example | bar | Main |
-            
             <!-- /springconfmetadata -->
-        
-        """.trimIndent())
+            """.trimIndent())
     }
 
     @Test
@@ -263,9 +258,7 @@ class PluginFunctionalTest {
         | Name | Type | Description | Default | Source |
         |:---|:---|:---|:---|:---|
         | foo | java.lang.Boolean | example | n/a | Main |
-
         <!-- /springconfmetadata -->
-        
         """.trimIndent())
 
     }
@@ -294,9 +287,7 @@ class PluginFunctionalTest {
         | Name | Type | Description | Default | Source |
         |:---|:---|:---|:---|:---|
         | foo | java.lang.Boolean | example | n/a | Main |
-
         <!-- /springconfmetadata -->
-        
         """.trimIndent())
 
         // change task input file
@@ -310,7 +301,7 @@ class PluginFunctionalTest {
         assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(UP_TO_DATE)
 
         // change task output
-        readmeFile.addText("\nA new line")
+        readmeFile.addText("\n\nA new line")
         result = executeGradleWithArgs("renderMetadataTable")
         assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
 
@@ -321,11 +312,9 @@ class PluginFunctionalTest {
         | Name | Type | Description | Default | Source |
         |:---|:---|:---|:---|:---|
         | foo | java.lang.Boolean | example | n/a | Main |
-
         <!-- /springconfmetadata -->
         
         A new line
-        
         """.trimIndent())
 
         // fourth task execution without input/output changes
@@ -347,17 +336,16 @@ class PluginFunctionalTest {
             | Name | Type | Description | Default | Source |
             |:---|:---|:---|:---|:---|
             | foo | java.lang.Boolean | example | n/a | Main |
+
             **Source**: */test-project/subfolder_2/spring-configuration-metadata.json*
             
             | Name | Type | Description | Default | Source |
             |:---|:---|:---|:---|:---|
             | bar | java.lang.String | example | bar | Main |
-            
             <!-- /springconfmetadata -->
             
             A new line
-        
-        """.trimIndent())
+            """.trimIndent())
 
     }
 
@@ -366,8 +354,8 @@ class PluginFunctionalTest {
         .createFile(asFileAttribute(fromString("rw-------")))
         .addText(
             """
-                <!-- springconfmetadata -->
-                <!-- /springconfmetadata -->
+            <!-- springconfmetadata -->
+            <!-- /springconfmetadata -->
             """.trimIndent()
         )
 

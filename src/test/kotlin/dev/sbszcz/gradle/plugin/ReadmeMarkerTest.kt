@@ -47,7 +47,6 @@ class ReadmeMarkerTest {
             paragraph 2
             
             <!--springconfmetadata--><!--/springconfmetadata-->
-            
         """.trimIndent()
     }
 
