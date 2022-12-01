@@ -101,6 +101,7 @@ class PluginFunctionalTest {
                 plugins {
                     id("dev.sbszcz.spring-conf-metadata-to-markdown") version "0.0.1"
                 }
+                
             """.trimIndent())
 
         subFolder1 = projectDir.resolve("subfolder_1").createDirectories()
@@ -131,6 +132,46 @@ class PluginFunctionalTest {
 
         assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
         assertThat(readmeFile.readText()).isEqualTo("""
+        <!-- springconfmetadata -->
+        **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
+
+        | Name | Type | Description | Default | Source |
+        |:---|:---|:---|:---|:---|
+        | foo | java.lang.Boolean | example | n/a | Main |
+
+        <!-- /springconfmetadata -->
+        
+        """.trimIndent())
+
+    }
+
+    @Test
+    fun `renderMetadataTable task execution is successful for custom markdown file`() {
+
+        buildFile.addText("""
+            springConfMetadataMarkdown {
+                readMeTarget.set(project.file("documentation.md"))
+            }
+        """.trimIndent())
+
+        val customMarkdownFile = projectDir
+            .resolve("documentation.md")
+            .createFile(asFileAttribute(fromString("rw-------")))
+            .addText(
+                """
+                <!-- springconfmetadata -->
+                <!-- /springconfmetadata -->
+            """.trimIndent()
+            )
+
+        subFolder1.resolve("spring-configuration-metadata.json")
+            .createFile()
+            .addText(SPRING_CONF_METADATA_SAMPLE_1)
+
+        val result = executeGradleWithArgs("renderMetadataTable")
+
+        assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
+        assertThat(customMarkdownFile.readText()).isEqualTo("""
         <!-- springconfmetadata -->
         **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
 
