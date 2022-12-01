@@ -29,10 +29,14 @@ dependencies {
 }
 
 gradlePlugin {
-
+    website.set("https://github.com/sbszcz/spring-conf-metadata-markdown-gradle-plugin")
+    vcsUrl.set("https://github.com/sbszcz/spring-conf-metadata-markdown-gradle-plugin")
     plugins {
         create("SpringConfMetadataMarkdownGradlePlugin") {
             id = "dev.sbszcz.spring-conf-metadata-to-markdown"
+            displayName = "Spring Configuration Metadata Markdown Generator"
+            description = "A gradle plugin that converts spring-configuration-metadata.json files into markdown tables and writes them into a markdown file."
+            tags.set(listOf("spring", "documentation", "markdown"))
             implementationClass = "dev.sbszcz.spring.conf.metadata.markdown.SpringConfMetadataMarkdownGradlePlugin"
         }
     }
