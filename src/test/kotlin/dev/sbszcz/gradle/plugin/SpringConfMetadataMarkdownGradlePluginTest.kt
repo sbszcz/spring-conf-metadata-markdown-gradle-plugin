@@ -14,7 +14,7 @@ class SpringConfMetadataMarkdownGradlePluginTest {
     fun `plugin registers task renderMetadataTable`() {
 
         val project = ProjectBuilder.builder().build()
-        project.plugins.apply("dev.sbszcz.spring-conf-metadata-to-markdown")
+        project.plugins.apply("io.github.sbszcz.spring-conf-metadata-to-markdown")
 
         val task = project.tasks.named("renderMetadataTable", RenderMarkdownTableTask::class.java).get()
         assertThat(task).isNotNull()

@@ -11,7 +11,7 @@ plugins {
     kotlin("jvm") version "1.7.20"
 }
 
-group = "dev.sbszcz"
+group = "io.github.sbszcz"
 version = "0.0.1"
 
 repositories {
@@ -33,7 +33,7 @@ gradlePlugin {
     vcsUrl.set("https://github.com/sbszcz/spring-conf-metadata-markdown-gradle-plugin")
     plugins {
         create("SpringConfMetadataMarkdownGradlePlugin") {
-            id = "dev.sbszcz.spring-conf-metadata-to-markdown"
+            id = "io.github.sbszcz.spring-conf-metadata-to-markdown"
             displayName = "Spring Configuration Metadata Markdown Generator"
             description = "A gradle plugin that converts spring-configuration-metadata.json files into markdown tables and writes them into a markdown file."
             tags.set(listOf("spring", "documentation", "markdown"))

@@ -99,7 +99,7 @@ class PluginFunctionalTest {
             .createFile()
             .addText("""
                 plugins {
-                    id("dev.sbszcz.spring-conf-metadata-to-markdown") version "0.0.1"
+                    id("io.github.sbszcz.spring-conf-metadata-to-markdown") version "0.0.1"
                 }
                 
             """.trimIndent())
