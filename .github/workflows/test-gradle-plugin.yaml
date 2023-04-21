@@ -18,10 +18,10 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: test --tests "dev.sbszcz.gradle.plugin.PluginFunctionalTest.renderMetadataTable should render a table for each detected spring-configuration-metadata_json file"
+          arguments: test
       - name: Testreport
         uses: dorny/test-reporter@v1
         with:
           name: Testreport for all Unit and Integration Tests
-          path: build/test-results/TEST-*.xml
+          path: build/test-results/test/TEST-*.xml
           reporter: java-junit

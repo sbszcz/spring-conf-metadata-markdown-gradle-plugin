@@ -260,9 +260,9 @@ class PluginFunctionalTest {
 
         val actual = readmeFile.readText()
 
-        println("======================= ACTUAL =================================")
-        println(actual)
-        println("======================= ACTUAL =================================")
+//        println("======================= ACTUAL =================================")
+//        println(actual)
+//        println("======================= ACTUAL =================================")
 
         assertThat(actual).isEqualTo("""
             <!-- springconfmetadata -->
