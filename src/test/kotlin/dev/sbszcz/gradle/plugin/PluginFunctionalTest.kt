@@ -257,7 +257,14 @@ class PluginFunctionalTest {
         val result = executeGradleWithArgs("renderMetadataTable")
 
         assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
-        assertThat(readmeFile.readText()).isEqualTo("""
+
+        val actual = readmeFile.readText()
+
+        println("======================= ACTUAL =================================")
+        println(actual)
+        println("======================= ACTUAL =================================")
+
+        assertThat(actual).isEqualTo("""
             <!-- springconfmetadata -->
             **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
             
@@ -272,6 +279,7 @@ class PluginFunctionalTest {
             | bar | java.lang.String | example | bar | Main |
             <!-- /springconfmetadata -->
             """.trimIndent())
+
     }
 
     @Test
