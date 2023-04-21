@@ -134,7 +134,7 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
 
         val content = StringBuilder("")
 
-        for (jsonFile in springConfigMetadataJson.files) {
+        for (jsonFile in springConfigMetadataJson.files.toList().sorted()) {
             val sourcePath = sourcePath(jsonFile, projectFolderName)
             val json = JSONObject(jsonFile.readText())
             val rows =  collectRows(json)
