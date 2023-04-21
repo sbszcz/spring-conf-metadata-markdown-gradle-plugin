@@ -8,7 +8,7 @@ plugins {
     `java-gradle-plugin`
     `maven-publish`
     id("com.gradle.plugin-publish") version "1.1.0"
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.8.0"
 }
 
 group = "io.github.sbszcz"
@@ -52,7 +52,7 @@ tasks.withType<Test> {
             SKIPPED,
             FAILED
         )
-
+        showStandardStreams = true
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
 

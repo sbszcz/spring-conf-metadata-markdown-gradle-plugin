@@ -84,6 +84,25 @@ class PluginFunctionalTest {
       ]
     }""".trimIndent()
 
+    @Language("json")
+    val SPRING_CONF_METADATA_SAMPLE_3 = """
+    {
+      "properties": [
+        {
+          "name": "bar",
+          "type": "java.lang.String",
+          "description": "example",
+          "sourceType": "Main",
+          "defaultValue": "bar",
+          "deprecation": {
+            "level": "warning",
+            "reason": "because its broken",
+            "replacement": "use something else"
+          }
+        }
+      ]
+    }""".trimIndent()
+
     @BeforeEach
     fun setup() {
 
@@ -138,6 +157,30 @@ class PluginFunctionalTest {
         | Name | Type | Description | Default | Source |
         |:---|:---|:---|:---|:---|
         | foo | java.lang.Boolean | example | n/a | Main |
+        <!-- /springconfmetadata -->
+        """.trimIndent())
+
+    }
+
+    @Test
+    fun `renderMetadataTable should render spring-configuration-metadata_json with optional deprecation element`() {
+
+        val readmeFile = createReadmeFileWithTags()
+
+        subFolder1.resolve("spring-configuration-metadata.json")
+            .createFile()
+            .addText(SPRING_CONF_METADATA_SAMPLE_3)
+
+        val result = executeGradleWithArgs("renderMetadataTable")
+
+        assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
+        assertThat(readmeFile.readText()).isEqualTo("""
+        <!-- springconfmetadata -->
+        **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
+
+        | Name | Type | Description | Default | Source | Deprecation |
+        |:---|:---|:---|:---|:---|:---|
+        | bar | java.lang.String | example | bar | Main | level: warning, reason: because its broken, replacement: use something else |
         <!-- /springconfmetadata -->
         """.trimIndent())
 
@@ -364,6 +407,7 @@ class PluginFunctionalTest {
         .withProjectDir(projectDir.toFile())
         .withPluginClasspath()
         .withArguments(arguments.toList())
+//        .withDebug(true)
         .build()
 
 }

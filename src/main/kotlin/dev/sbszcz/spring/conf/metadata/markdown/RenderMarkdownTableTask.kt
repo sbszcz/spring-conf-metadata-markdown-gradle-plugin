@@ -1,5 +1,11 @@
 package dev.sbszcz.spring.conf.metadata.markdown
 
+import dev.sbszcz.spring.conf.metadata.markdown.Column.Default
+import dev.sbszcz.spring.conf.metadata.markdown.Column.Deprecation
+import dev.sbszcz.spring.conf.metadata.markdown.Column.Description
+import dev.sbszcz.spring.conf.metadata.markdown.Column.Name
+import dev.sbszcz.spring.conf.metadata.markdown.Column.Source
+import dev.sbszcz.spring.conf.metadata.markdown.Column.Type
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
@@ -53,21 +59,51 @@ object ReadmeWriter {
     }
 }
 
-fun StringBuilder.appendTableRows(jsonObject: JSONObject): java.lang.StringBuilder {
+enum class Column {
+    Name, Type, Description, Default, Source, Deprecation
+}
 
-    for (prop in jsonObject.getJSONArray("properties")) {
-        val property = prop as JSONObject
-        val name = property.optString("name", "n/a")
-        val type = property.optString("type", "n/a")
-        val description = property.optString("description", "n/a")
-        val defaultValue = property.optString("defaultValue", "n/a")
-        val sourceType = property.optString("sourceType", "n/a")
+fun StringBuilder.appendTableHeader(rows: List<Map<Column, String>>): java.lang.StringBuilder {
 
-        this.append("| $name | $type | $description | $defaultValue | $sourceType |\n")
+    this.append("|")
+
+    val availableColumns: Set<Column> = rows.firstOrNull()?.keys ?: emptySet()
+
+    Column.values().forEach { column ->
+        if (availableColumns.contains(column)){
+            this.append(" ${column.name} |")
+        }
+    }
+
+    this.append("\n")
+    this.append("|")
+    availableColumns.forEach { this.append(":---|") }
+
+    return this
+}
+
+fun StringBuilder.appendTableRows(rows: List<Map<Column, String>>): java.lang.StringBuilder {
+
+    this.append("|")
+
+    for (row in rows) {
+        this
+            .append(" ${row[Name]} |")
+            .append(" ${row[Type]} |")
+            .append(" ${row[Description]} |")
+            .append(" ${row[Default]} |")
+            .append(" ${row[Source]} |")
+
+        if(row.containsKey(Deprecation)){
+            this.append(" ${row[Deprecation]} |")
+        }
+
+        this.append("\n")
     }
 
     return this
 }
+
 
 abstract class RenderMarkdownTableTask : DefaultTask() {
 
@@ -79,10 +115,6 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
     @get:Optional
     abstract val readMeTarget: RegularFileProperty
 
-    private val tableHeader = """
-        | Name | Type | Description | Default | Source |
-        |:---|:---|:---|:---|:---|
-    """.trimIndent()
 
     init {
         this.group = "documentation"
@@ -104,16 +136,20 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
 
         for (jsonFile in springConfigMetadataJson.files) {
             val sourcePath = sourcePath(jsonFile, projectFolderName)
+            val json = JSONObject(jsonFile.readText())
+            val rows =  collectRows(json)
+
             val tableContent = StringBuilder("")
+
             tableContent
                 .append("**Source**: *${sourcePath}*")
                 .append("\n\n")
-                .append(tableHeader)
+                .appendTableHeader(rows)
                 .append("\n")
 
             try {
                 tableContent
-                    .appendTableRows(JSONObject(jsonFile.readText()))
+                    .appendTableRows(rows)
                     .append("\n")
                 content.append(tableContent)
             } catch (e: JSONException) {
@@ -126,6 +162,48 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
         }
 
         ReadmeWriter.writeTextInsideMarker(content.toString().trimEnd(), readmeTargetFile)
+    }
+
+    private fun collectRows(jsonObject: JSONObject): List<Map<Column, String>>{
+
+        return jsonObject.getJSONArray("properties").map {
+            val property = it as JSONObject
+            val row = mutableMapOf<Column, String>(
+                Name to property.optString("name", "n/a"),
+                Type to property.optString("type", "n/a"),
+                Description to property.optString("description", "n/a"),
+                Default to property.optString("defaultValue", "n/a"),
+                Source to property.optString("sourceType", "n/a"),
+            )
+
+            val deprecation = property.optJSONObject("deprecation", null)
+            if (deprecation != null){
+                val level =  deprecation.optString("level", "n/a")
+                val reason =  deprecation.optString("reason", "n/a")
+                val replacement =  deprecation.optString("replacement", "n/a")
+                row[Deprecation] = "level: $level, reason: $reason, replacement: $replacement"
+            }
+
+            row.toMap()
+        }
+
+
+//            val name = property.optString("name", "n/a")
+//            this.append("$name |")
+//
+//            val type = property.optString("type", "n/a")
+//            this.append(" $type |")
+//
+//            val description = property.optString("description", "n/a")
+//            this.append(" $description |")
+//
+//            val defaultValue = property.optString("defaultValue", "n/a")
+//            this.append(" $defaultValue |")
+//
+//            val sourceType = property.optString("sourceType", "n/a")
+//            this.append(" $sourceType |")
+
+//            this.append("\n")
     }
 
     private fun sourcePath(jsonFile: File, projectFolderName: String): String {
