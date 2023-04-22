@@ -1,6 +1,6 @@
 # Spring Configuration Metadata Markdown Generator
 
-[![Build and run all tests](https://github.com/sbszcz/spring-conf-metadata-markdown-gradle-plugin/actions/workflows/test-gradle-plugin.yaml/badge.svg)](https://github.com/sbszcz/spring-conf-metadata-markdown-gradle-plugin/actions/workflows/test-gradle-plugin.yaml)
+[![Build and run all tests](https://github.com/sbszcz/spring-conf-metadata-markdown-gradle-plugin/actions/workflows/test-gradle-plugin.yaml/badge.svg)](https://github.com/sbszcz/spring-conf-metadata-markdown-gradle-plugin/actions/workflows/test-gradle-plugin.yaml) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.github.sbszcz.spring-conf-metadata-to-markdown?label=Gradle%20Plugin%20Portal)](https://plugins.gradle.org/plugin/io.github.sbszcz.spring-conf-metadata-to-markdown)
 
 A gradle plugin that converts `spring-configuration-metadata.json` files (see [Spring Configuration Metadata](https://docs.spring.io/spring-boot/docs/current/reference/html/configuration-metadata.html)) into markdown tables 
 and writes them into your README.md (or other specified markdown files)
