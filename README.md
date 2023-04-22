@@ -24,13 +24,24 @@ Example README.md
 
 ```
 
-The target markdown file can be customized like this:
+# Configuration
 
 Example build.gradle.kts
 ```kotlin
 ...
 springConfMetadataMarkdown {
+    
+    // sets the target markdown file (defaults to: README.md)
     readMeTarget.set(project.file("documentation.md"))
+    
+    // configure the rendered columns (defaults to: Name, Type, Description, Default )
+    columns.set(
+        listOf(
+            dev.sbszcz.spring.conf.metadata.markdown.Column.Name,
+            dev.sbszcz.spring.conf.metadata.markdown.Column.Description,
+            dev.sbszcz.spring.conf.metadata.markdown.Column.Type
+        )
+    )
 }
 ...
 ```
