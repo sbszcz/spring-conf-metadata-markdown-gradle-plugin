@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "io.github.sbszcz"
-version = "0.0.2"
+version = "0.0.3"
 
 repositories {
     mavenCentral()
@@ -35,7 +35,7 @@ gradlePlugin {
         create("SpringConfMetadataMarkdownGradlePlugin") {
             id = "io.github.sbszcz.spring-conf-metadata-to-markdown"
             displayName = "Spring Configuration Metadata Markdown Generator"
-            description = "A gradle plugin that converts spring-configuration-metadata.json files into markdown tables and writes them into a markdown file."
+            description = "A gradle plugin that converts spring-configuration-metadata.json files into markdown tables and writes them your README.md."
             tags.set(listOf("spring", "documentation", "markdown"))
             implementationClass = "dev.sbszcz.spring.conf.metadata.markdown.SpringConfMetadataMarkdownGradlePlugin"
         }

@@ -2,8 +2,8 @@
 
 [![Build and run all tests](https://github.com/sbszcz/spring-conf-metadata-markdown-gradle-plugin/actions/workflows/test-gradle-plugin.yaml/badge.svg)](https://github.com/sbszcz/spring-conf-metadata-markdown-gradle-plugin/actions/workflows/test-gradle-plugin.yaml)
 
-A gradle plugin that converts `spring-configuration-metadata.json` (see [Spring Configuration Metadata](https://docs.spring.io/spring-boot/docs/current/reference/html/configuration-metadata.html)) files into markdown tables 
-and writes them into a markdown files (e.g. README.md)
+A gradle plugin that converts `spring-configuration-metadata.json` files (see [Spring Configuration Metadata](https://docs.spring.io/spring-boot/docs/current/reference/html/configuration-metadata.html)) into markdown tables 
+and writes them into your README.md (or other specified markdown files)
 
 # Usage
 
