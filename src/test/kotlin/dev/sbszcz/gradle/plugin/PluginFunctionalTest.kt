@@ -154,18 +154,29 @@ class PluginFunctionalTest {
         <!-- springconfmetadata -->
         **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
 
-        | Name | Type | Description | Default | Source |
-        |:---|:---|:---|:---|:---|
-        | foo | java.lang.Boolean | example | n/a | Main |
+        | Name | Type | Description | Default |
+        |:---|:---|:---|:---|
+        | foo | java.lang.Boolean | example | n/a |
         <!-- /springconfmetadata -->
         """.trimIndent())
-
     }
 
     @Test
     fun `renderMetadataTable should render spring-configuration-metadata_json with optional deprecation element`() {
 
         val readmeFile = createReadmeFileWithTags()
+
+        buildFile.addText("""
+            springConfMetadataMarkdown {
+                columns = [
+                    dev.sbszcz.spring.conf.metadata.markdown.Column.Name,
+                    dev.sbszcz.spring.conf.metadata.markdown.Column.Type,
+                    dev.sbszcz.spring.conf.metadata.markdown.Column.Description,
+                    dev.sbszcz.spring.conf.metadata.markdown.Column.Default,
+                    dev.sbszcz.spring.conf.metadata.markdown.Column.Deprecation
+                ]
+            }
+        """.trimIndent())
 
         subFolder1.resolve("spring-configuration-metadata.json")
             .createFile()
@@ -178,12 +189,43 @@ class PluginFunctionalTest {
         <!-- springconfmetadata -->
         **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
 
-        | Name | Type | Description | Default | Source | Deprecation |
-        |:---|:---|:---|:---|:---|:---|
-        | bar | java.lang.String | example | bar | Main | level: warning, reason: because its broken, replacement: use something else |
+        | Name | Type | Description | Default | Deprecation |
+        |:---|:---|:---|:---|:---|
+        | bar | java.lang.String | example | bar | level: warning, reason: because its broken, replacement: use something else |
         <!-- /springconfmetadata -->
         """.trimIndent())
+    }
 
+    @Test
+    fun `renderMetadataTable should render table with Name and Description column`() {
+
+        val readmeFile = createReadmeFileWithTags()
+
+        buildFile.addText("""
+            springConfMetadataMarkdown {
+                columns = [
+                    dev.sbszcz.spring.conf.metadata.markdown.Column.Name,                   
+                    dev.sbszcz.spring.conf.metadata.markdown.Column.Description
+                ]
+            }
+        """.trimIndent())
+
+        subFolder1.resolve("spring-configuration-metadata.json")
+            .createFile()
+            .addText(SPRING_CONF_METADATA_SAMPLE_3)
+
+        val result = executeGradleWithArgs("renderMetadataTable")
+
+        assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
+        assertThat(readmeFile.readText()).isEqualTo("""
+        <!-- springconfmetadata -->
+        **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
+
+        | Name | Description |
+        |:---|:---|
+        | bar | example |
+        <!-- /springconfmetadata -->
+        """.trimIndent())
     }
 
     @Test
@@ -191,7 +233,7 @@ class PluginFunctionalTest {
 
         buildFile.addText("""
             springConfMetadataMarkdown {
-                readMeTarget.set(project.file("documentation.md"))
+                readMeTarget = project.file("documentation.md")
             }
         """.trimIndent())
 
@@ -216,9 +258,9 @@ class PluginFunctionalTest {
             <!-- springconfmetadata -->
             **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
             
-            | Name | Type | Description | Default | Source |
-            |:---|:---|:---|:---|:---|
-            | foo | java.lang.Boolean | example | n/a | Main |
+            | Name | Type | Description | Default |
+            |:---|:---|:---|:---|
+            | foo | java.lang.Boolean | example | n/a |
             <!-- /springconfmetadata -->
             """.trimIndent())
 
@@ -268,15 +310,15 @@ class PluginFunctionalTest {
             <!-- springconfmetadata -->
             **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
             
-            | Name | Type | Description | Default | Source |
-            |:---|:---|:---|:---|:---|
-            | foo | java.lang.Boolean | example | n/a | Main |
+            | Name | Type | Description | Default |
+            |:---|:---|:---|:---|
+            | foo | java.lang.Boolean | example | n/a |
 
             **Source**: */test-project/subfolder_2/spring-configuration-metadata.json*
             
-            | Name | Type | Description | Default | Source |
-            |:---|:---|:---|:---|:---|
-            | bar | java.lang.String | example | bar | Main |
+            | Name | Type | Description | Default |
+            |:---|:---|:---|:---|
+            | bar | java.lang.String | example | bar |
             <!-- /springconfmetadata -->
             """.trimIndent())
 
@@ -306,9 +348,9 @@ class PluginFunctionalTest {
         <!-- springconfmetadata -->
         **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
 
-        | Name | Type | Description | Default | Source |
-        |:---|:---|:---|:---|:---|
-        | foo | java.lang.Boolean | example | n/a | Main |
+        | Name | Type | Description | Default |
+        |:---|:---|:---|:---|
+        | foo | java.lang.Boolean | example | n/a |
         <!-- /springconfmetadata -->
         """.trimIndent())
 
@@ -335,9 +377,9 @@ class PluginFunctionalTest {
         <!-- springconfmetadata -->
         **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
 
-        | Name | Type | Description | Default | Source |
-        |:---|:---|:---|:---|:---|
-        | foo | java.lang.Boolean | example | n/a | Main |
+        | Name | Type | Description | Default |
+        |:---|:---|:---|:---|
+        | foo | java.lang.Boolean | example | n/a |
         <!-- /springconfmetadata -->
         """.trimIndent())
 
@@ -360,9 +402,9 @@ class PluginFunctionalTest {
         <!-- springconfmetadata -->
         **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
 
-        | Name | Type | Description | Default | Source |
-        |:---|:---|:---|:---|:---|
-        | foo | java.lang.Boolean | example | n/a | Main |
+        | Name | Type | Description | Default |
+        |:---|:---|:---|:---|
+        | foo | java.lang.Boolean | example | n/a |
         <!-- /springconfmetadata -->
         
         A new line
@@ -384,20 +426,19 @@ class PluginFunctionalTest {
             <!-- springconfmetadata -->
             **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
             
-            | Name | Type | Description | Default | Source |
-            |:---|:---|:---|:---|:---|
-            | foo | java.lang.Boolean | example | n/a | Main |
+            | Name | Type | Description | Default |
+            |:---|:---|:---|:---|
+            | foo | java.lang.Boolean | example | n/a |
 
             **Source**: */test-project/subfolder_2/spring-configuration-metadata.json*
             
-            | Name | Type | Description | Default | Source |
-            |:---|:---|:---|:---|:---|
-            | bar | java.lang.String | example | bar | Main |
+            | Name | Type | Description | Default |
+            |:---|:---|:---|:---|
+            | bar | java.lang.String | example | bar |
             <!-- /springconfmetadata -->
             
             A new line
             """.trimIndent())
-
     }
 
     private fun createReadmeFileWithTags() = projectDir
@@ -415,7 +456,7 @@ class PluginFunctionalTest {
         .withProjectDir(projectDir.toFile())
         .withPluginClasspath()
         .withArguments(arguments.toList())
-//        .withDebug(true)
+        .withDebug(true)
         .build()
 
 }

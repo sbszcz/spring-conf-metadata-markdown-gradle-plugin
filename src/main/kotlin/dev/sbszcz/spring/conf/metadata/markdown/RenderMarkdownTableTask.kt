@@ -10,6 +10,8 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
@@ -63,42 +65,47 @@ enum class Column {
     Name, Type, Description, Default, Source, Deprecation
 }
 
-fun StringBuilder.appendTableHeader(rows: List<Map<Column, String>>): java.lang.StringBuilder {
+fun StringBuilder.appendTableHeader(rows: List<Map<Column, String>>, displayedColumns: List<Column>): java.lang.StringBuilder {
 
     this.append("|")
 
     val availableColumns: Set<Column> = rows.firstOrNull()?.keys ?: emptySet()
 
     Column.values().forEach { column ->
-        if (availableColumns.contains(column)){
+        if (displayedColumns.contains(column) && availableColumns.contains(column)){
             this.append(" ${column.name} |")
         }
     }
 
     this.append("\n")
-    this.append("|")
-    availableColumns.forEach { this.append(":---|") }
+        .append("|")
+
+    availableColumns.filter{ displayedColumns.contains(it) }.forEach { this.append(":---|") }
 
     return this
 }
 
-fun StringBuilder.appendTableRows(rows: List<Map<Column, String>>): java.lang.StringBuilder {
+fun StringBuilder.appendIf(value: String, condition: () -> Boolean = { true }): java.lang.StringBuilder{
+
+    if(condition())
+        this.append(value)
+
+    return this
+}
+
+fun StringBuilder.appendTableRows(rows: List<Map<Column, String>>, displayedColumns: List<Column>): java.lang.StringBuilder {
 
     this.append("|")
 
     for (row in rows) {
         this
-            .append(" ${row[Name]} |")
-            .append(" ${row[Type]} |")
-            .append(" ${row[Description]} |")
-            .append(" ${row[Default]} |")
-            .append(" ${row[Source]} |")
-
-        if(row.containsKey(Deprecation)){
-            this.append(" ${row[Deprecation]} |")
-        }
-
-        this.append("\n")
+            .appendIf(" ${row[Name]} |") { displayedColumns.contains(Name) }
+            .appendIf(" ${row[Type]} |") { displayedColumns.contains(Type) }
+            .appendIf(" ${row[Description]} |") { displayedColumns.contains(Description) }
+            .appendIf(" ${row[Default]} |") { displayedColumns.contains(Default) }
+            .appendIf(" ${row[Source]} |") { displayedColumns.contains(Source) }
+            .appendIf(" ${row[Deprecation]} |") { row.containsKey(Deprecation) && displayedColumns.contains(Deprecation) }
+            .append("\n")
     }
 
     return this
@@ -110,6 +117,10 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
     @get:InputFiles
     @get:Optional
     abstract val springConfigMetadataJson: ConfigurableFileCollection
+
+    @get:Input
+    @get:Optional
+    abstract val columns: ListProperty<Column>
 
     @get:OutputFile
     @get:Optional
@@ -136,21 +147,20 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
 
         for (jsonFile in springConfigMetadataJson.files.toList().sorted()) {
             val sourcePath = sourcePath(jsonFile, projectFolderName)
-            val json = JSONObject(jsonFile.readText())
-            val rows =  collectRows(json)
-
             val tableContent = StringBuilder("")
 
-            tableContent
-                .append("**Source**: *${sourcePath}*")
-                .append("\n\n")
-                .appendTableHeader(rows)
-                .append("\n")
-
             try {
+                val json = JSONObject(jsonFile.readText())
+                val jsonRows = collectRowsFromJson(json)
+
                 tableContent
-                    .appendTableRows(rows)
+                    .append("**Source**: *${sourcePath}*")
+                    .append("\n\n")
+                    .appendTableHeader(jsonRows, columns.get())
                     .append("\n")
+                    .appendTableRows(jsonRows, columns.get())
+                    .append("\n")
+
                 content.append(tableContent)
             } catch (e: JSONException) {
                 logger.error("error during json parsing ${jsonFile.absolutePath}", e)
@@ -164,7 +174,7 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
         ReadmeWriter.writeTextInsideMarker(content.toString().trimEnd(), readmeTargetFile)
     }
 
-    private fun collectRows(jsonObject: JSONObject): List<Map<Column, String>>{
+    private fun collectRowsFromJson(jsonObject: JSONObject): List<Map<Column, String>>{
 
         return jsonObject.getJSONArray("properties").map {
             val property = it as JSONObject
@@ -186,24 +196,6 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
 
             row.toMap()
         }
-
-
-//            val name = property.optString("name", "n/a")
-//            this.append("$name |")
-//
-//            val type = property.optString("type", "n/a")
-//            this.append(" $type |")
-//
-//            val description = property.optString("description", "n/a")
-//            this.append(" $description |")
-//
-//            val defaultValue = property.optString("defaultValue", "n/a")
-//            this.append(" $defaultValue |")
-//
-//            val sourceType = property.optString("sourceType", "n/a")
-//            this.append(" $sourceType |")
-
-//            this.append("\n")
     }
 
     private fun sourcePath(jsonFile: File, projectFolderName: String): String {
