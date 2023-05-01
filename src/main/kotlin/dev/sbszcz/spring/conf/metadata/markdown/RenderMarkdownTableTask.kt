@@ -118,14 +118,13 @@ abstract class RenderMarkdownTableTask : DefaultTask() {
     @get:Optional
     abstract val springConfigMetadataJson: ConfigurableFileCollection
 
-    @get:Input
-    @get:Optional
-    abstract val columns: ListProperty<Column>
-
     @get:OutputFile
     @get:Optional
     abstract val readMeTarget: RegularFileProperty
 
+    @get:Input
+    @get:Optional
+    abstract val columns: ListProperty<Column>
 
     init {
         this.group = "documentation"

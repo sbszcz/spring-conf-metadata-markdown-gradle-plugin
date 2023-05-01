@@ -118,7 +118,7 @@ class PluginFunctionalTest {
             .createFile()
             .addText("""
                 plugins {
-                    id("io.github.sbszcz.spring-conf-metadata-to-markdown") version "0.0.1"
+                    id("io.github.sbszcz.spring-conf-metadata-to-markdown") version "0.0.3"
                 }
                 
             """.trimIndent())
@@ -354,6 +354,119 @@ class PluginFunctionalTest {
         <!-- /springconfmetadata -->
         """.trimIndent())
 
+    }
+
+    @Test
+    fun `renderMetadataTable task should disable exclusion filter and include all spring-configuration-metadata_json`() {
+
+        val readmeFile = createReadmeFileWithTags()
+
+        subFolder1.resolve("spring-configuration-metadata.json")
+            .createFile()
+            .addText(SPRING_CONF_METADATA_SAMPLE_1)
+
+        val ignoredConfig = projectDir.resolve("build")
+            .createDirectory()
+            .resolve("spring-configuration-metadata.json")
+            .createFile()
+            .addText(SPRING_CONF_METADATA_SAMPLE_2)
+
+        assertThat(ignoredConfig.toFile()).exists()
+
+        buildFile.addText("""
+            springConfMetadataMarkdown {
+                ignore.set([""])
+            }
+        """.trimIndent())
+
+        val result = executeGradleWithArgs("renderMetadataTable")
+
+        assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
+        assertThat(readmeFile.readText()).isEqualTo("""
+            <!-- springconfmetadata -->
+            **Source**: */test-project/build/spring-configuration-metadata.json*
+            
+            | Name | Type | Description | Default |
+            |:---|:---|:---|:---|
+            | bar | java.lang.String | example | bar |
+            
+            **Source**: */test-project/subfolder_1/spring-configuration-metadata.json*
+            
+            | Name | Type | Description | Default |
+            |:---|:---|:---|:---|
+            | foo | java.lang.Boolean | example | n/a |
+            <!-- /springconfmetadata -->
+        """.trimIndent())
+    }
+
+    @Test
+    fun `renderMetadataTable task should ONLY include spring-configuration-metadata_json in build folders`() {
+
+        val readmeFile = createReadmeFileWithTags()
+
+        subFolder1.resolve("spring-configuration-metadata.json")
+            .createFile()
+            .addText(SPRING_CONF_METADATA_SAMPLE_1)
+
+        val ignoredConfig = projectDir.resolve("build")
+            .createDirectory()
+            .resolve("spring-configuration-metadata.json")
+            .createFile()
+            .addText(SPRING_CONF_METADATA_SAMPLE_2)
+
+        assertThat(ignoredConfig.toFile()).exists()
+
+        buildFile.addText("""
+            springConfMetadataMarkdown {
+                ignore.set(["subfolder_1/"])
+            }
+        """.trimIndent())
+
+        val result = executeGradleWithArgs("renderMetadataTable")
+
+        assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
+        assertThat(readmeFile.readText()).isEqualTo("""
+            <!-- springconfmetadata -->
+            **Source**: */test-project/build/spring-configuration-metadata.json*
+            
+            | Name | Type | Description | Default |
+            |:---|:---|:---|:---|
+            | bar | java.lang.String | example | bar |
+            <!-- /springconfmetadata -->
+        """.trimIndent())
+    }
+
+    @Test
+    fun `renderMetadataTable task should ignore several folders`() {
+
+        val readmeFile = createReadmeFileWithTags()
+
+        subFolder1.resolve("spring-configuration-metadata.json")
+            .createFile()
+            .addText(SPRING_CONF_METADATA_SAMPLE_1)
+
+        val ignoredConfig = projectDir.resolve("build")
+            .createDirectory()
+            .resolve("spring-configuration-metadata.json")
+            .createFile()
+            .addText(SPRING_CONF_METADATA_SAMPLE_2)
+
+        assertThat(ignoredConfig.toFile()).exists()
+
+        buildFile.addText("""
+            springConfMetadataMarkdown {
+                ignore.set(["subfolder_1/", "build/"])
+            }
+        """.trimIndent())
+
+        val result = executeGradleWithArgs("renderMetadataTable")
+
+        assertThat(result.task(":renderMetadataTable")?.outcome).isEqualTo(SUCCESS)
+        assertThat(readmeFile.readText()).isEqualTo("""
+            <!-- springconfmetadata -->
+
+            <!-- /springconfmetadata -->
+        """.trimIndent())
     }
 
     @Test
