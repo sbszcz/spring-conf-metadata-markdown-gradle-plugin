@@ -418,7 +418,7 @@ class PluginFunctionalTest {
 
         buildFile.addText("""
             springConfMetadataMarkdown {
-                ignore.set(["subfolder_1/"])
+                ignore = ["subfolder_1/"]
             }
         """.trimIndent())
 
