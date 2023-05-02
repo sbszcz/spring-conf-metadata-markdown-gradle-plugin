@@ -44,8 +44,8 @@ springConfMetadataMarkdown {
     )
     
     // control folders where 'spring-configuration-metadata.json' should be ignored from (defaults to: ['**/build/**'])
-    // include all folders by setting ignore to: ignore.set([""])
-    ignore.set(["a_folder/", "b_folder/"])
+    // include all folders by setting ignore to: ignore.set(listOf(""))
+    ignore.set(listOf("a_folder/", "b_folder/"))
     
 }
 ...
