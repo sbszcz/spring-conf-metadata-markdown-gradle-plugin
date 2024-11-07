@@ -8,7 +8,7 @@ plugins {
     `java-gradle-plugin`
     `maven-publish`
     id("com.gradle.plugin-publish") version "1.1.0"
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "2.0.21"
 }
 
 group = "io.github.sbszcz"
